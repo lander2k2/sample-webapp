@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-webapp
+  namespace: web-app
+spec:
+  containers:
+  - name: sample-webapp
+    image: lander2k2/sample-webapp
+    env:
+    - name: DB_NAME
+      value: "webapp_sample"
+    - name: DB_HOST
+      value: "webapp-sample-db"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: sample-webapp-secret
+          key: username
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: sample-webapp-secret
+          key: password

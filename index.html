@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Sample Web App</title>
+	</head>
+	<body bgcolor="MediumSeaGreen">
+		<h1>Sample Web App</h1>
+        {{if .}}
+            <h2>Planets</h2>
+            {{range $planet := .}}
+            <p>The planet {{$planet.Name}} has a diameter of {{$planet.Diameter}} kilometers and is {{$planet.Distance}} million kilometers from Earth.</p>
+            {{end}}
+        {{else}}
+            <p>No data to display</p>
+        {{end}}
+	</body>
+    <footer>
+        <p><small>Version 1.0</small></p>
+    </footer>
+</html>
+
