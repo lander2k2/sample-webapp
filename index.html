@@ -3,19 +3,33 @@
 	<head>
 		<title>Sample Web App</title>
 	</head>
-	<body bgcolor="MediumSeaGreen">
+	<body bgcolor="LightSeaGreen">
 		<h1>Sample Web App</h1>
         {{if .}}
             <h2>Planets</h2>
             {{range $planet := .}}
-            <p>The planet {{$planet.Name}} has a diameter of {{$planet.Diameter}} kilometers and is {{$planet.Distance}} million kilometers from Earth.</p>
+            <p>
+                The planet {{$planet.Name}} has a diameter of {{$planet.Diameter}}
+                kilometers and is {{$planet.Distance}} million kilometers from Earth.
+                <br />
+                {{if $planet.Moons}}
+                    It has the following moons:
+                    <ul>
+                        {{range $moon := $planet.Moons}}
+                            <li>{{$moon.Name}}</li>
+                        {{end}}
+                    </ul>
+                {{else}}
+                    It has no moons.
+                {{end}}
+            </p>
             {{end}}
         {{else}}
             <p>No data to display</p>
         {{end}}
 	</body>
     <footer>
-        <p><small>Version 1.0</small></p>
+        <p><small>Version 2.0</small></p>
     </footer>
 </html>
 

@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/golang/glog"
 	_ "github.com/lib/pq"
@@ -27,10 +28,14 @@ type DbParams struct {
 }
 
 type Planet struct {
-	Id       int
 	Name     string
 	Diameter int
 	Distance int
+	Moons    []Moon
+}
+
+type Moon struct {
+	Name string
 }
 
 func main() {
@@ -107,7 +112,10 @@ func dbConnect(params *DbParams) (*sql.DB, error) {
 }
 
 func (storage *Storage) getPlanets() ([]*Planet, error) {
-	stmt := `SELECT name, diameter, distance FROM planets`
+
+	stmt := `
+SELECT planets.name, planets.diameter, planets.distance, moons.name
+FROM planets FULL JOIN moons ON planets.id=moons.planet_id`
 
 	rows, err := storage.Db.Query(stmt)
 	if err != nil {
@@ -119,11 +127,31 @@ func (storage *Storage) getPlanets() ([]*Planet, error) {
 	planets := []*Planet{}
 	for rows.Next() {
 		planet := &Planet{}
-		err = rows.Scan(&planet.Name, &planet.Diameter, &planet.Distance)
+		moon := &Moon{}
+		hasMoons := true
+		err = rows.Scan(&planet.Name, &planet.Diameter, &planet.Distance, &moon.Name)
 		if err != nil {
-			return nil, err
+			if strings.Contains(err.Error(), "Scan error") {
+				hasMoons = false
+			} else {
+				return nil, err
+			}
 		}
-		planets = append(planets, planet)
+		exists := false
+		for i, p := range planets {
+			if planet.Name == p.Name {
+				planets[i].Moons = append(planets[i].Moons, *moon)
+				exists = true
+			}
+		}
+		if !exists {
+			if hasMoons {
+				planet.Moons = append(planet.Moons, *moon)
+				planets = append(planets, planet)
+			} else {
+				planets = append(planets, planet)
+			}
+		}
 	}
 
 	return planets, nil
