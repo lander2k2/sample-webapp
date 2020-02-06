@@ -5,7 +5,7 @@ testing, demos and examples in Kubernetes.
 
 ## Prerequisites
 
-- a running Postgres database called "webapp_sample"
+- a running Postgres instance with a database called "webapp_sample"
 - psql installed locally
 
 ## Prepare the Database
